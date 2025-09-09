@@ -1,0 +1,55 @@
+# Scala
+*.class
+*.log
+*.ctxt
+.project
+.classpath
+.settings
+.target
+.idea
+*.iml
+*.ipr
+*.iws
+
+# SBT
+.cache
+.history
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala IDE specific
+.scala_dependencies
+.worksheet
+
+# Metals (Scala Language Server)
+.metals/
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Mac
+.DS_Store
+
+# Spark
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Data files
+data/input/*.csv
+data/output/
+*.csv
+*.json
+
+# Logs
+logs/
+*.log
