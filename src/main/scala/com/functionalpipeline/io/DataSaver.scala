@@ -1,6 +1,6 @@
 package com.functionalpipeline.io
 
-import com.functionalpipeline.models.ProcessedMovieRecord
+import com.functionalpipeline.models.{ProcessedMovieRecord, GenreStatistics}
 import org.apache.spark.sql.Dataset
 
 /**
@@ -37,6 +37,42 @@ object DataSaver {
         record.popularityScore
       )
     }.toDF("id", "title", "year", "genre", "rating", "votes", "decade", "ratingCategory", "popularityScore")
+    
+    flattenedData.write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv(outputPath)
+  }
+  
+  
+  /**
+   * Saves genre statistics data to a file.
+   * 
+   * @param data Dataset of genre statistics
+   * @param outputPath Path where to save the data
+   */
+  def saveGenreStatistics(data: Dataset[GenreStatistics], outputPath: String): Unit = {
+    data.write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv(outputPath)
+  }
+  
+  /**
+   * Saves top movies by decade data to a file.
+   * 
+   * @param data Dataset of top movies grouped by decade
+   * @param outputPath Path where to save the data
+   */
+  def saveTopMoviesByDecade(data: Dataset[(String, List[ProcessedMovieRecord])], outputPath: String): Unit = {
+    import data.sparkSession.implicits._
+    
+    // Flatten the data for CSV output
+    val flattenedData = data.flatMap { case (decade, movies) =>
+      movies.map { movie =>
+        (decade, movie.movie.title, movie.movie.rating, movie.popularityScore, movie.movie.genre)
+      }
+    }.toDF("decade", "title", "rating", "popularityScore", "genre")
     
     flattenedData.write
       .mode("overwrite")

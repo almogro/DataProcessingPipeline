@@ -11,7 +11,7 @@ echo "📊 Processing movie data with Apache Spark..."
 sbt -J"--add-opens=java.base/java.nio=ALL-UNNAMED" \
     -J"--add-opens=java.base/sun.nio=ALL-UNNAMED" \
     -J"--illegal-access=warn" \
-    "runMain com.functionalpipeline.Main data/input/sample_movies.csv data/output" 2>&1 | grep -E "(Data processing pipeline completed successfully|Pipeline completed successfully|✅|📁|🎬)" || true
+    "runMain com.functionalpipeline.Main data/input/movies_large.csv data/output" 2>&1 | grep -E "(Data processing pipeline completed successfully|Pipeline completed successfully|✅|📁|🎬)" || true
 
 echo ""
 echo "✅ Pipeline completed successfully!"

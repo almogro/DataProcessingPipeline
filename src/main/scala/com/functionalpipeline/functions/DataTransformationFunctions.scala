@@ -41,17 +41,18 @@ object DataTransformationFunctions {
   /**
    * Categorizes a rating into a descriptive category.
    * 
-   * This demonstrates pattern matching in functional programming.
-   * 
    * @param rating The movie rating
    * @return A categorical description of the rating
    */
   private def categorizeRating(rating: Double): String = {
     rating match {
-      case r if r >= 9.0 => "Excellent"
-      case r if r >= 7.0 => "Good"
+      case r if r >= 9.0 => "Masterpiece"
+      case r if r >= 8.0 => "Excellent"
+      case r if r >= 7.0 => "Great"
+      case r if r >= 6.0 => "Good"
       case r if r >= 5.0 => "Average"
-      case _ => "Poor"
+      case r if r >= 4.0 => "Poor"
+      case _ => "Bad"
     }
   }
   

@@ -15,10 +15,10 @@ class DataPipeline(spark: SparkSession) {
   import spark.implicits._
   
   /**
-   * Processes the input data through the functional pipeline.
+   * Processes the input data through the functional pipeline with quality filtering.
    * 
    * @param rawData Raw input data as Dataset[String]
-   * @return Processed data as Dataset[ProcessedMovieRecord]
+   * @return Processed high-quality data as Dataset[ProcessedMovieRecord]
    */
   def processData(rawData: Dataset[String]): Dataset[ProcessedMovieRecord] = {
     // Parse raw data into movie records
@@ -27,12 +27,32 @@ class DataPipeline(spark: SparkSession) {
       .filter(_.isDefined)
       .map(_.get)
     
-    // Apply functional transformations
+    // Apply quality filtering
     val filteredMovies = movieRecords
       .filter(DataFilteringFunctions.isHighQualityMovie(_))
     
     // Transform using pure functions
     val processedMovies = filteredMovies
+      .map(DataTransformationFunctions.enrichMovieRecord)
+    
+    processedMovies
+  }
+  
+  /**
+   * Processes all input data without quality filtering.
+   * 
+   * @param rawData Raw input data as Dataset[String]
+   * @return Processed data for all movies as Dataset[ProcessedMovieRecord]
+   */
+  def processAllData(rawData: Dataset[String]): Dataset[ProcessedMovieRecord] = {
+    // Parse raw data into movie records
+    val movieRecords = rawData
+      .map(DataParsingFunctions.parseMovieRecord)
+      .filter(_.isDefined)
+      .map(_.get)
+    
+    // Transform all movies using pure functions (no filtering)
+    val processedMovies = movieRecords
       .map(DataTransformationFunctions.enrichMovieRecord)
     
     processedMovies
