@@ -7,6 +7,14 @@ scalaVersion := "2.12.19"
 // Java version
 javacOptions ++= Seq("-source", "11", "-target", "11")
 
+// JVM options to suppress warnings
+run / fork := true
+run / javaOptions ++= Seq(
+  "--add-opens=java.base/java.nio=ALL-UNNAMED",
+  "--add-opens=java.base/sun.nio=ALL-UNNAMED",
+  "--illegal-access=warn"
+)
+
 // Scala compiler options
 scalacOptions ++= Seq(
   "-deprecation",
