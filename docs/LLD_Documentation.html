@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>LLD_Documentation</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="/dev/fd/15" />
+</head>
+<body>
+<h1 id="low-level-design-lld-documentation">Low-Level Design (LLD)
+Documentation</h1>
+<h2
+id="functional-data-processing-pipeline-with-apache-spark">Functional
+Data Processing Pipeline with Apache Spark</h2>
+<hr />
+<p><strong>Project:</strong> Functional Data Processing Pipeline<br />
+<strong>Technology Stack:</strong> Scala 2.12.19, Apache Spark 3.5.0,
+sbt 1.9.7<br />
+<strong>Java Version:</strong> OpenJDK 11<br />
+<strong>Date:</strong> September 2025</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#system-overview">System Overview</a></li>
+<li><a href="#architecture-design">Architecture Design</a></li>
+<li><a href="#data-models">Data Models</a></li>
+<li><a href="#component-design">Component Design</a></li>
+<li><a href="#functional-programming-implementation">Functional
+Programming Implementation</a></li>
+<li><a href="#data-flow">Data Flow</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#testing-strategy">Testing Strategy</a></li>
+<li><a href="#deployment">Deployment</a></li>
+</ol>
+<hr />
+<h2 id="system-overview">System Overview</h2>
+<h3 id="purpose">Purpose</h3>
+<p>The Functional Data Processing Pipeline is a Scala-based application
+that processes movie data using Apache Spark, demonstrating advanced
+functional programming principles including immutability, pure
+functions, higher-order functions, currying, and combinators.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Data Ingestion</strong>: CSV file parsing and
+validation</li>
+<li><strong>Data Processing</strong>: Functional transformations and
+enrichments</li>
+<li><strong>Data Output</strong>: Structured CSV output with enhanced
+metadata</li>
+<li><strong>Quality Filtering</strong>: High-quality movie selection
+criteria</li>
+<li><strong>Analytics</strong>: Genre statistics and decade-based
+analysis</li>
+</ul>
+<hr />
+<h2 id="architecture-design">Architecture Design</h2>
+<h3 id="high-level-architecture">High-Level Architecture</h3>
+<pre><code>┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Data Input    │───▶│  Processing      │───▶│  Data Output    │
+│   (CSV Files)   │    │  Pipeline        │    │  (Enhanced CSV) │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌──────────────────┐
+                       │  Spark Cluster   │
+                       │  (Local Mode)    │
+                       └──────────────────┘</code></pre>
+<h3 id="component-architecture">Component Architecture</h3>
+<pre><code>Main.scala
+├── DataLoader (I/O Layer)
+├── DataPipeline (Processing Layer)
+│   ├── DataParsingFunctions
+│   ├── DataFilteringFunctions
+│   ├── DataTransformationFunctions
+│   └── DataAggregationFunctions
+├── DataSaver (I/O Layer)
+└── Combinators (Utility Layer)</code></pre>
+<hr />
+<h2 id="data-models">Data Models</h2>
+<h3 id="core-data-structures">Core Data Structures</h3>
+<h4 id="datarecord-sealed-trait">1. DataRecord (Sealed Trait)</h4>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sealed</span> <span class="kw">trait</span> DataRecord</span></code></pre></div>
+<ul>
+<li><strong>Purpose</strong>: Type-safe hierarchy for all data
+records</li>
+<li><strong>Benefits</strong>: Enables pattern matching and type
+safety</li>
+</ul>
+<h4 id="movierecord-input-model">2. MovieRecord (Input Model)</h4>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="kw">class</span> <span class="fu">MovieRecord</span><span class="op">(</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  id<span class="op">:</span> <span class="ex">String</span><span class="op">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  title<span class="op">:</span> <span class="ex">String</span><span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  year<span class="op">:</span> <span class="bu">Int</span><span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  genre<span class="op">:</span> <span class="ex">String</span><span class="op">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  rating<span class="op">:</span> <span class="ex">Double</span><span class="op">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  votes<span class="op">:</span> <span class="ex">Long</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="kw">extends</span> DataRecord</span></code></pre></div>
+<ul>
+<li><strong>Purpose</strong>: Represents raw movie data from CSV</li>
+<li><strong>Immutability</strong>: All fields are immutable</li>
+<li><strong>Validation</strong>: Parsed and validated from CSV
+input</li>
+</ul>
+<h4 id="processedmovierecord-output-model">3. ProcessedMovieRecord
+(Output Model)</h4>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="kw">class</span> <span class="fu">ProcessedMovieRecord</span><span class="op">(</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  movie<span class="op">:</span> MovieRecord<span class="op">,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  decade<span class="op">:</span> <span class="ex">String</span><span class="op">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  ratingCategory<span class="op">:</span> <span class="ex">String</span><span class="op">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  popularityScore<span class="op">:</span> <span class="ex">Double</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="kw">extends</span> DataRecord</span></code></pre></div>
+<ul>
+<li><strong>Purpose</strong>: Enriched movie data with additional
+metadata</li>
+<li><strong>Enrichment Fields</strong>:
+<ul>
+<li><code>decade</code>: Calculated from year (e.g., “1990s”)</li>
+<li><code>ratingCategory</code>: Categorized rating (“Excellent”,
+“Good”, “Average”)</li>
+<li><code>popularityScore</code>: Computed from rating and votes</li>
+</ul></li>
+</ul>
+<h4 id="supporting-models">4. Supporting Models</h4>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="kw">class</span> <span class="fu">GenreStatistics</span><span class="op">(</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  genre<span class="op">:</span> <span class="ex">String</span><span class="op">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  movieCount<span class="op">:</span> <span class="bu">Int</span><span class="op">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  averageRating<span class="op">:</span> <span class="ex">Double</span><span class="op">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  topMovie<span class="op">:</span> <span class="ex">String</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="kw">class</span> <span class="fu">ProcessingResult</span><span class="op">(</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  totalMovies<span class="op">:</span> <span class="bu">Int</span><span class="op">,</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  processedMovies<span class="op">:</span> <span class="bu">Int</span><span class="op">,</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  genreStats<span class="op">:</span> <span class="ex">List</span><span class="op">[</span>GenreStatistics<span class="op">]</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="kw">class</span> <span class="fu">PipelineConfig</span><span class="op">(</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  minRating<span class="op">:</span> <span class="ex">Double</span><span class="op">,</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  minVotes<span class="op">:</span> <span class="ex">Long</span><span class="op">,</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  topMoviesCount<span class="op">:</span> <span class="bu">Int</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<hr />
+<h2 id="component-design">Component Design</h2>
+<h3 id="main.scala-entry-point">1. Main.scala (Entry Point)</h3>
+<p><strong>Responsibilities:</strong> - Initialize Spark session -
+Orchestrate data processing pipeline - Handle application lifecycle</p>
+<p><strong>Key Methods:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">main</span><span class="op">(</span>args<span class="op">:</span> <span class="ex">Array</span><span class="op">[</span><span class="ex">String</span><span class="op">]):</span> <span class="bu">Unit</span></span></code></pre></div>
+<p><strong>Design Patterns:</strong> - <strong>Dependency
+Injection</strong>: Spark session passed to components -
+<strong>Resource Management</strong>: Try-finally for proper cleanup</p>
+<h3 id="dataloader-io-layer">2. DataLoader (I/O Layer)</h3>
+<p><strong>Responsibilities:</strong> - Load raw data from external
+sources - Parse CSV files into Spark Datasets - Handle file system
+operations</p>
+<p><strong>Key Methods:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">loadData</span><span class="op">(</span>spark<span class="op">:</span> SparkSession<span class="op">,</span> inputPath<span class="op">:</span> <span class="ex">String</span><span class="op">):</span> Dataset<span class="op">[</span><span class="ex">String</span><span class="op">]</span></span></code></pre></div>
+<p><strong>Design Principles:</strong> - <strong>Separation of
+Concerns</strong>: I/O separated from business logic - <strong>Error
+Handling</strong>: Graceful handling of file system errors</p>
+<h3 id="datapipeline-processing-layer">3. DataPipeline (Processing
+Layer)</h3>
+<p><strong>Responsibilities:</strong> - Orchestrate data processing
+workflow - Apply functional transformations - Coordinate between
+different processing functions</p>
+<p><strong>Key Methods:</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">processData</span><span class="op">(</span>rawData<span class="op">:</span> Dataset<span class="op">[</span><span class="ex">String</span><span class="op">]):</span> Dataset<span class="op">[</span>ProcessedMovieRecord<span class="op">]</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">computeGenreStatistics</span><span class="op">(</span>movies<span class="op">:</span> Dataset<span class="op">[</span>ProcessedMovieRecord<span class="op">]):</span> Dataset<span class="op">[</span>GenreStatistics<span class="op">]</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">findTopMoviesByDecade</span><span class="op">(</span>movies<span class="op">:</span> Dataset<span class="op">[</span>ProcessedMovieRecord<span class="op">]):</span> Dataset<span class="op">[(</span><span class="ex">String</span><span class="op">,</span> <span class="ex">List</span><span class="op">[</span>ProcessedMovieRecord<span class="op">])]</span></span></code></pre></div>
+<p><strong>Design Patterns:</strong> - <strong>Pipeline
+Pattern</strong>: Sequential data processing stages - <strong>Functional
+Composition</strong>: Chaining pure functions</p>
+<h3 id="datasaver-io-layer">4. DataSaver (I/O Layer)</h3>
+<p><strong>Responsibilities:</strong> - Save processed data to external
+destinations - Handle data serialization - Manage output file
+operations</p>
+<p><strong>Key Methods:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">saveData</span><span class="op">(</span>data<span class="op">:</span> Dataset<span class="op">[</span>ProcessedMovieRecord<span class="op">],</span> outputPath<span class="op">:</span> <span class="ex">String</span><span class="op">):</span> <span class="bu">Unit</span></span></code></pre></div>
+<p><strong>Design Principles:</strong> - <strong>Immutability</strong>:
+No side effects in data processing - <strong>Type Safety</strong>:
+Strong typing for data structures</p>
+<hr />
+<h2 id="functional-programming-implementation">Functional Programming
+Implementation</h2>
+<h3 id="pure-functions">1. Pure Functions</h3>
+<h4 id="dataparsingfunctions">DataParsingFunctions</h4>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">parseMovieRecord</span><span class="op">(</span>line<span class="op">:</span> <span class="ex">String</span><span class="op">):</span> <span class="ex">Option</span><span class="op">[</span>MovieRecord<span class="op">]</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">isValidMovieRecord</span><span class="op">(</span>record<span class="op">:</span> MovieRecord<span class="op">):</span> <span class="ex">Boolean</span></span></code></pre></div>
+<ul>
+<li><strong>Purity</strong>: No side effects, deterministic output</li>
+<li><strong>Error Handling</strong>: Returns Option for safe
+parsing</li>
+</ul>
+<h4 id="datafilteringfunctions">DataFilteringFunctions</h4>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">isHighQualityMovie</span><span class="op">(</span>record<span class="op">:</span> MovieRecord<span class="op">):</span> <span class="ex">Boolean</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">isFromDecade</span><span class="op">(</span>decade<span class="op">:</span> <span class="ex">String</span><span class="op">)(</span>record<span class="op">:</span> MovieRecord<span class="op">):</span> <span class="ex">Boolean</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">hasMinimumRating</span><span class="op">(</span>minRating<span class="op">:</span> <span class="ex">Double</span><span class="op">)(</span>record<span class="op">:</span> MovieRecord<span class="op">):</span> <span class="ex">Boolean</span></span></code></pre></div>
+<ul>
+<li><strong>Currying</strong>: Partial application for flexible
+filtering</li>
+<li><strong>Composability</strong>: Functions can be combined</li>
+</ul>
+<h4 id="datatransformationfunctions">DataTransformationFunctions</h4>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">enrichMovieRecord</span><span class="op">(</span>record<span class="op">:</span> MovieRecord<span class="op">):</span> ProcessedMovieRecord</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">categorizeRating</span><span class="op">(</span>rating<span class="op">:</span> <span class="ex">Double</span><span class="op">):</span> <span class="ex">String</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">calculateDecade</span><span class="op">(</span>year<span class="op">:</span> <span class="bu">Int</span><span class="op">):</span> <span class="ex">String</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">computePopularityScore</span><span class="op">(</span>rating<span class="op">:</span> <span class="ex">Double</span><span class="op">,</span> votes<span class="op">:</span> <span class="ex">Long</span><span class="op">):</span> <span class="ex">Double</span></span></code></pre></div>
+<ul>
+<li><strong>Immutability</strong>: Creates new objects instead of
+modifying existing ones</li>
+<li><strong>Pattern Matching</strong>: Used in rating
+categorization</li>
+</ul>
+<h3 id="higher-order-functions">2. Higher-Order Functions</h3>
+<h4 id="spark-transformations">Spark Transformations</h4>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">val</span> filteredMovies <span class="op">=</span> movieRecords</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">filter</span><span class="op">(</span>DataFilteringFunctions<span class="op">.</span><span class="fu">isHighQualityMovie</span><span class="op">(</span>_<span class="op">))</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">map</span><span class="op">(</span>DataTransformationFunctions<span class="op">.</span>enrichMovieRecord<span class="op">)</span></span></code></pre></div>
+<h4 id="custom-combinators">Custom Combinators</h4>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> when<span class="op">[</span>A<span class="op">](</span>condition<span class="op">:</span> <span class="ex">Boolean</span><span class="op">)(</span>f<span class="op">:</span> A <span class="op">=&gt;</span> A<span class="op">):</span> A <span class="op">=&gt;</span> A</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pipe<span class="op">[</span>A<span class="op">](</span>value<span class="op">:</span> A<span class="op">)(</span>f<span class="op">:</span> A <span class="op">=&gt;</span> A<span class="op">):</span> A</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> andThen<span class="op">[</span>A<span class="op">,</span> B<span class="op">,</span> C<span class="op">](</span>f<span class="op">:</span> A <span class="op">=&gt;</span> B<span class="op">)(</span>g<span class="op">:</span> B <span class="op">=&gt;</span> C<span class="op">):</span> A <span class="op">=&gt;</span> C</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compose<span class="op">[</span>A<span class="op">,</span> B<span class="op">,</span> C<span class="op">](</span>f<span class="op">:</span> B <span class="op">=&gt;</span> C<span class="op">)(</span>g<span class="op">:</span> A <span class="op">=&gt;</span> B<span class="op">):</span> A <span class="op">=&gt;</span> C</span></code></pre></div>
+<h3 id="tail-recursion">3. Tail Recursion</h3>
+<h4 id="dataaggregationfunctions">DataAggregationFunctions</h4>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">computeAverageRatingTail</span><span class="op">(</span>movies<span class="op">:</span> <span class="ex">List</span><span class="op">[</span>ProcessedMovieRecord<span class="op">],</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                           sum<span class="op">:</span> <span class="ex">Double</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                           count<span class="op">:</span> <span class="bu">Int</span> <span class="op">=</span> <span class="dv">0</span><span class="op">):</span> <span class="ex">Double</span></span></code></pre></div>
+<ul>
+<li><strong>Tail Recursion</strong>: Optimized for large datasets</li>
+<li><strong>Stack Safety</strong>: Prevents stack overflow</li>
+</ul>
+<h3 id="functional-error-handling">4. Functional Error Handling</h3>
+<h4 id="option-type-usage">Option Type Usage</h4>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">parseMovieRecord</span><span class="op">(</span>line<span class="op">:</span> <span class="ex">String</span><span class="op">):</span> <span class="ex">Option</span><span class="op">[</span>MovieRecord<span class="op">]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Returns Some(record) on success, None on failure</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h4 id="either-type-for-complex-error-handling">Either Type for Complex
+Error Handling</h4>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> retry<span class="op">[</span>A<span class="op">](</span>maxAttempts<span class="op">:</span> <span class="bu">Int</span><span class="op">)(</span>f<span class="op">:</span> <span class="op">()</span> <span class="op">=&gt;</span> A<span class="op">):</span> Either<span class="op">[</span><span class="ex">Throwable</span><span class="op">,</span> A<span class="op">]</span></span></code></pre></div>
+<hr />
+<h2 id="data-flow">Data Flow</h2>
+<h3 id="input-stage">1. Input Stage</h3>
+<pre><code>CSV File → DataLoader → Dataset[String]</code></pre>
+<h3 id="parsing-stage">2. Parsing Stage</h3>
+<pre><code>Dataset[String] → parseMovieRecord → Dataset[Option[MovieRecord]] → filter(_.isDefined) → Dataset[MovieRecord]</code></pre>
+<h3 id="filtering-stage">3. Filtering Stage</h3>
+<pre><code>Dataset[MovieRecord] → filter(isHighQualityMovie) → Dataset[MovieRecord]</code></pre>
+<h3 id="transformation-stage">4. Transformation Stage</h3>
+<pre><code>Dataset[MovieRecord] → map(enrichMovieRecord) → Dataset[ProcessedMovieRecord]</code></pre>
+<h3 id="output-stage">5. Output Stage</h3>
+<pre><code>Dataset[ProcessedMovieRecord] → DataSaver → CSV Files</code></pre>
+<h3 id="analytics-stage-optional">6. Analytics Stage (Optional)</h3>
+<pre><code>Dataset[ProcessedMovieRecord] → groupByKey(_.movie.genre) → Dataset[GenreStatistics]
+Dataset[ProcessedMovieRecord] → groupByKey(_.decade) → Dataset[(String, List[ProcessedMovieRecord])]</code></pre>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<h3 id="build-configuration-build.sbt">Build Configuration
+(build.sbt)</h3>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>name <span class="op">:=</span> <span class="st">&quot;functional-data-pipeline&quot;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>version <span class="op">:=</span> <span class="st">&quot;1.0.0&quot;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>scalaVersion <span class="op">:=</span> <span class="st">&quot;2.12.19&quot;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Dependencies</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>libraryDependencies <span class="op">++=</span> <span class="bu">Seq</span><span class="op">(</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;org.apache.spark&quot;</span> <span class="op">%%</span> <span class="st">&quot;spark-core&quot;</span> <span class="op">%</span> <span class="st">&quot;3.5.0&quot;</span><span class="op">,</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;org.apache.spark&quot;</span> <span class="op">%%</span> <span class="st">&quot;spark-sql&quot;</span> <span class="op">%</span> <span class="st">&quot;3.5.0&quot;</span><span class="op">,</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;org.scalatest&quot;</span> <span class="op">%%</span> <span class="st">&quot;scalatest&quot;</span> <span class="op">%</span> <span class="st">&quot;3.2.17&quot;</span> <span class="op">%</span> Test<span class="op">,</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;org.typelevel&quot;</span> <span class="op">%%</span> <span class="st">&quot;cats-core&quot;</span> <span class="op">%</span> <span class="st">&quot;2.10.0&quot;</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="co">// JVM Options</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>run <span class="op">/</span> fork <span class="op">:=</span> <span class="kw">true</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>run <span class="op">/</span> javaOptions <span class="op">++=</span> <span class="bu">Seq</span><span class="op">(</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;--add-opens=java.base/java.nio=ALL-UNNAMED&quot;</span><span class="op">,</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;--add-opens=java.base/sun.nio=ALL-UNNAMED&quot;</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<h3 id="runtime-configuration">Runtime Configuration</h3>
+<h4 id="pipelineconfig">PipelineConfig</h4>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="kw">class</span> <span class="fu">PipelineConfig</span><span class="op">(</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  minRating<span class="op">:</span> <span class="ex">Double</span> <span class="op">=</span> <span class="fl">7.0</span><span class="op">,</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  minVotes<span class="op">:</span> <span class="ex">Long</span> <span class="op">=</span> <span class="dv">100000L</span><span class="op">,</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  topMoviesCount<span class="op">:</span> <span class="bu">Int</span> <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<h4 id="spark-configuration">Spark Configuration</h4>
+<ul>
+<li><strong>Master</strong>: local[*] (local mode with all available
+cores)</li>
+<li><strong>App Name</strong>: “Functional Data Processing
+Pipeline”</li>
+<li><strong>Memory</strong>: 7.0 GiB (configurable)</li>
+</ul>
+<hr />
+<h2 id="testing-strategy">Testing Strategy</h2>
+<h3 id="unit-testing-framework">Unit Testing Framework</h3>
+<ul>
+<li><strong>ScalaTest</strong>: Primary testing framework</li>
+<li><strong>Test Structure</strong>: Organized by component</li>
+<li><strong>Coverage</strong>: All pure functions tested</li>
+</ul>
+<h3 id="test-categories">Test Categories</h3>
+<h4 id="dataparsingfunctionstest">1. DataParsingFunctionsTest</h4>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;parseMovieRecord&quot;</span> should <span class="st">&quot;parse valid CSV line correctly&quot;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;parseMovieRecord&quot;</span> should <span class="st">&quot;return None for invalid input&quot;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;isValidMovieRecord&quot;</span> should <span class="st">&quot;validate movie record fields&quot;</span></span></code></pre></div>
+<h4 id="datafilteringfunctionstest">2. DataFilteringFunctionsTest</h4>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;isHighQualityMovie&quot;</span> should <span class="st">&quot;filter movies by rating and votes&quot;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;isFromDecade&quot;</span> should <span class="st">&quot;filter movies by decade using currying&quot;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;hasMinimumRating&quot;</span> should <span class="st">&quot;filter movies by minimum rating&quot;</span></span></code></pre></div>
+<h4 id="combinatorstest">3. CombinatorsTest</h4>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;when combinator&quot;</span> should <span class="st">&quot;apply function conditionally&quot;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;pipe combinator&quot;</span> should <span class="st">&quot;chain function applications&quot;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;retry combinator&quot;</span> should <span class="st">&quot;retry operations with backoff&quot;</span></span></code></pre></div>
+<h3 id="test-execution">Test Execution</h3>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbt</span> test</span></code></pre></div>
+<hr />
+<h2 id="deployment">Deployment</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><strong>Java</strong>: OpenJDK 11</li>
+<li><strong>Scala</strong>: 2.12.19</li>
+<li><strong>sbt</strong>: 1.9.7</li>
+<li><strong>Memory</strong>: Minimum 4GB RAM</li>
+</ul>
+<h3 id="build-process">Build Process</h3>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">sbt</span> compile</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run tests</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="ex">sbt</span> test</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create JAR</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="ex">sbt</span> assembly</span></code></pre></div>
+<h3 id="execution">Execution</h3>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Direct execution</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="ex">sbt</span> <span class="st">&quot;runMain com.functionalpipeline.Main data/input/sample_movies.csv data/output&quot;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Using run script</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./run.sh</span></span></code></pre></div>
+<h3 id="output-structure">Output Structure</h3>
+<pre><code>data/output/
+├── _SUCCESS
+└── part-00000-*.csv</code></pre>
+<hr />
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="memory-management">Memory Management</h3>
+<ul>
+<li><strong>Spark Memory</strong>: 7.0 GiB allocated</li>
+<li><strong>Garbage Collection</strong>: G1GC for better
+performance</li>
+<li><strong>Caching</strong>: Strategic caching of frequently accessed
+data</li>
+</ul>
+<h3 id="scalability">Scalability</h3>
+<ul>
+<li><strong>Local Mode</strong>: Suitable for development and small
+datasets</li>
+<li><strong>Cluster Mode</strong>: Can be extended for production
+use</li>
+<li><strong>Partitioning</strong>: Automatic partitioning by Spark</li>
+</ul>
+<h3 id="optimization">Optimization</h3>
+<ul>
+<li><strong>Lazy Evaluation</strong>: Spark’s lazy evaluation for
+efficiency</li>
+<li><strong>Predicate Pushdown</strong>: Filter operations pushed to
+data source</li>
+<li><strong>Code Generation</strong>: Spark’s code generation for
+performance</li>
+</ul>
+<hr />
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="input-validation">Input Validation</h3>
+<ul>
+<li><strong>CSV Parsing</strong>: Graceful handling of malformed
+data</li>
+<li><strong>Type Safety</strong>: Compile-time type checking</li>
+<li><strong>Option Types</strong>: Safe handling of missing data</li>
+</ul>
+<h3 id="runtime-errors">Runtime Errors</h3>
+<ul>
+<li><strong>Resource Management</strong>: Proper cleanup of Spark
+resources</li>
+<li><strong>Exception Handling</strong>: Try-catch blocks for critical
+operations</li>
+<li><strong>Logging</strong>: Comprehensive logging for debugging</li>
+</ul>
+<hr />
+<h2 id="future-enhancements">Future Enhancements</h2>
+<h3 id="potential-improvements">Potential Improvements</h3>
+<ol type="1">
+<li><strong>Streaming Processing</strong>: Real-time data
+processing</li>
+<li><strong>Machine Learning</strong>: MLlib integration for predictive
+analytics</li>
+<li><strong>Graph Processing</strong>: GraphX for relationship
+analysis</li>
+<li><strong>Cloud Deployment</strong>: AWS/Azure integration</li>
+<li><strong>Monitoring</strong>: Application performance monitoring</li>
+</ol>
+<h3 id="scalability-options">Scalability Options</h3>
+<ol type="1">
+<li><strong>Cluster Mode</strong>: Multi-node Spark cluster</li>
+<li><strong>Data Partitioning</strong>: Optimized data partitioning
+strategies</li>
+<li><strong>Caching</strong>: Strategic data caching for
+performance</li>
+<li><strong>Compression</strong>: Data compression for storage
+efficiency</li>
+</ol>
+<hr />
+<h2 id="conclusion">Conclusion</h2>
+<p>This Functional Data Processing Pipeline demonstrates the effective
+application of functional programming principles in a real-world data
+processing scenario. The design emphasizes immutability, pure functions,
+and composability while leveraging Apache Spark’s distributed computing
+capabilities for scalable data processing.</p>
+<p>The architecture is modular, testable, and maintainable, making it
+suitable for both educational purposes and production use with
+appropriate modifications for scale and performance requirements.</p>
+<hr />
+<p><strong>Document Version:</strong> 1.0<br />
+<strong>Last Updated:</strong> September 2025<br />
+<strong>Author:</strong> Functional Programming Project Team</p>
+</body>
+</html>
