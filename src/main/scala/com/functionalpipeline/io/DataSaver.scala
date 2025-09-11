@@ -1,6 +1,7 @@
 package com.functionalpipeline.io
 
 import com.functionalpipeline.models.{ProcessedMovieRecord, GenreStatistics}
+import com.functionalpipeline.models.{ProcessedMovieRecord, GenreStatistics}
 import org.apache.spark.sql.Dataset
 
 /**
@@ -23,18 +24,18 @@ object DataSaver {
   def saveData(data: Dataset[ProcessedMovieRecord], outputPath: String): Unit = {
     import data.sparkSession.implicits._
     
-    // Flatten the structure for CSV output
+    // Flatten the structure for CSV output with proper formatting
     val flattenedData = data.map { record =>
       (
         record.movie.id,
         record.movie.title,
         record.movie.year,
         record.movie.genre,
-        record.movie.rating,
-        record.movie.votes,
+        formatTo3Decimals(record.movie.rating),
+        formatNumberWithCommas(record.movie.votes),
         record.decade,
         record.ratingCategory,
-        record.popularityScore
+        formatTo3Decimals(record.popularityScore)
       )
     }.toDF("id", "title", "year", "genre", "rating", "votes", "decade", "ratingCategory", "popularityScore")
     
@@ -52,10 +53,44 @@ object DataSaver {
    * @param outputPath Path where to save the data
    */
   def saveGenreStatistics(data: Dataset[GenreStatistics], outputPath: String): Unit = {
-    data.write
+    import data.sparkSession.implicits._
+    
+    // Format numbers with comma separators for better readability
+    val formattedData = data.map { stats =>
+      (
+        stats.genre,
+        stats.count,
+        stats.averageRating,
+        formatNumberWithCommas(stats.totalVotes),
+        stats.topMovie
+      )
+    }.toDF("genre", "count", "averageRating", "totalVotes", "topMovie")
+    
+    formattedData.write
       .mode("overwrite")
       .option("header", "true")
       .csv(outputPath)
+  }
+  
+  /**
+   * Formats a number with comma separators for better readability.
+   * 
+   * @param number The number to format
+   * @return Formatted string with commas
+   */
+  private def formatNumberWithCommas(number: Long): String = {
+    java.text.NumberFormat.getNumberInstance(java.util.Locale.US).format(number)
+  }
+  
+  /**
+   * Formats a number to exactly 3 decimal places (truncates, doesn't round).
+   * 
+   * @param number The number to format
+   * @return Formatted string with exactly 3 decimal places
+   */
+  private def formatTo3Decimals(number: Double): String = {
+    val truncated = (number * 1000).toInt / 1000.0
+    f"$truncated%.3f"
   }
   
   /**
@@ -67,10 +102,16 @@ object DataSaver {
   def saveTopMoviesByDecade(data: Dataset[(String, List[ProcessedMovieRecord])], outputPath: String): Unit = {
     import data.sparkSession.implicits._
     
-    // Flatten the data for CSV output
+    // Flatten the data for CSV output with proper formatting
     val flattenedData = data.flatMap { case (decade, movies) =>
       movies.map { movie =>
-        (decade, movie.movie.title, movie.movie.rating, movie.popularityScore, movie.movie.genre)
+        (
+          decade, 
+          movie.movie.title, 
+          formatTo3Decimals(movie.movie.rating), 
+          formatTo3Decimals(movie.popularityScore), 
+          movie.movie.genre
+        )
       }
     }.toDF("decade", "title", "rating", "popularityScore", "genre")
     
@@ -79,6 +120,7 @@ object DataSaver {
       .option("header", "true")
       .csv(outputPath)
   }
+  
   
   /**
    * Saves data in JSON format.
