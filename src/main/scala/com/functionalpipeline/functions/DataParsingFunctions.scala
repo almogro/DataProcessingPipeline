@@ -2,23 +2,10 @@ package com.functionalpipeline.functions
 
 import com.functionalpipeline.models.MovieRecord
 
-/**
- * Pure functions for parsing and validating data.
- * 
- * These functions demonstrate functional programming principles
- * including immutability, pure functions, and error handling.
- */
+/** Pure functions for parsing and validating data. */
 object DataParsingFunctions {
   
-  /**
-   * Parses a CSV line into a MovieRecord.
-   * 
-   * This is a pure function that takes a string and returns an Option[MovieRecord],
-   * demonstrating functional error handling without exceptions.
-   * 
-   * @param line CSV line to parse
-   * @return Some(MovieRecord) if parsing succeeds, None otherwise
-   */
+  /** Parses CSV line to MovieRecord with error handling. */
   def parseMovieRecord(line: String): Option[MovieRecord] = {
     val fields = line.split(",")
     
@@ -41,12 +28,7 @@ object DataParsingFunctions {
     }
   }
   
-  /**
-   * Validates a movie record for completeness and data quality.
-   * 
-   * @param movie The movie record to validate
-   * @return true if the record is valid, false otherwise
-   */
+  /** Validates movie record for data quality. */
   def isValidMovieRecord(movie: MovieRecord): Boolean = {
     movie.id.nonEmpty &&
     movie.title.nonEmpty &&
@@ -58,14 +40,7 @@ object DataParsingFunctions {
     movie.votes >= 0
   }
   
-  /**
-   * Parses and validates a movie record in one step.
-   * 
-   * This demonstrates function composition in functional programming.
-   * 
-   * @param line CSV line to parse
-   * @return Some(MovieRecord) if parsing and validation succeed, None otherwise
-   */
+  /** Parses and validates movie record in one step. */
   def parseAndValidateMovieRecord(line: String): Option[MovieRecord] = {
     parseMovieRecord(line).filter(isValidMovieRecord)
   }

@@ -4,23 +4,10 @@ import com.functionalpipeline.models.{ProcessedMovieRecord, GenreStatistics}
 import com.functionalpipeline.models.{ProcessedMovieRecord, GenreStatistics}
 import org.apache.spark.sql.Dataset
 
-/**
- * Pure functions for saving data to external destinations.
- * 
- * This object demonstrates separation of I/O operations from pure logic
- * in functional programming.
- */
+/** I/O operations for saving data to external destinations. */
 object DataSaver {
   
-  /**
-   * Saves processed data to a file.
-   * 
-   * This function handles the I/O operation of saving data,
-   * keeping it separate from the pure data processing logic.
-   * 
-   * @param data Dataset of processed movie records
-   * @param outputPath Path where to save the data
-   */
+  /** Saves processed movie data to CSV file. */
   def saveData(data: Dataset[ProcessedMovieRecord], outputPath: String): Unit = {
     import data.sparkSession.implicits._
     
@@ -46,12 +33,7 @@ object DataSaver {
   }
   
   
-  /**
-   * Saves genre statistics data to a file.
-   * 
-   * @param data Dataset of genre statistics
-   * @param outputPath Path where to save the data
-   */
+  /** Saves genre statistics to CSV file. */
   def saveGenreStatistics(data: Dataset[GenreStatistics], outputPath: String): Unit = {
     import data.sparkSession.implicits._
     
@@ -72,33 +54,18 @@ object DataSaver {
       .csv(outputPath)
   }
   
-  /**
-   * Formats a number with comma separators for better readability.
-   * 
-   * @param number The number to format
-   * @return Formatted string with commas
-   */
+  /** Formats numbers with comma separators. */
   private def formatNumberWithCommas(number: Long): String = {
     java.text.NumberFormat.getNumberInstance(java.util.Locale.US).format(number)
   }
   
-  /**
-   * Formats a number to exactly 3 decimal places (truncates, doesn't round).
-   * 
-   * @param number The number to format
-   * @return Formatted string with exactly 3 decimal places
-   */
+  /** Truncates numbers to exactly 3 decimal places. */
   private def formatTo3Decimals(number: Double): String = {
     val truncated = (number * 1000).toInt / 1000.0
     f"$truncated%.3f"
   }
   
-  /**
-   * Saves top movies by decade data to a file.
-   * 
-   * @param data Dataset of top movies grouped by decade
-   * @param outputPath Path where to save the data
-   */
+  /** Saves top movies by decade to CSV file. */
   def saveTopMoviesByDecade(data: Dataset[(String, List[ProcessedMovieRecord])], outputPath: String): Unit = {
     import data.sparkSession.implicits._
     

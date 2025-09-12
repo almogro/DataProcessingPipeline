@@ -2,22 +2,10 @@ package com.functionalpipeline.functions
 
 import com.functionalpipeline.models.{MovieRecord, ProcessedMovieRecord}
 
-/**
- * Pure functions for transforming data.
- * 
- * These functions demonstrate functional programming concepts
- * including immutability, pure functions, and pattern matching.
- */
+/** Pure functions for data transformation and enrichment. */
 object DataTransformationFunctions {
   
-  /**
-   * Enriches a movie record with additional computed fields.
-   * 
-   * This function demonstrates pattern matching and pure transformations.
-   * 
-   * @param movie The original movie record
-   * @return An enriched ProcessedMovieRecord
-   */
+  /** Enriches movie record with computed fields. */
   def enrichMovieRecord(movie: MovieRecord): ProcessedMovieRecord = {
     ProcessedMovieRecord(
       movie = movie,
@@ -27,23 +15,13 @@ object DataTransformationFunctions {
     )
   }
   
-  /**
-   * Computes the decade string for a given year.
-   * 
-   * @param year The release year
-   * @return The decade string (e.g., "1990s", "2000s")
-   */
+  /** Computes decade string from year. */
   private def computeDecade(year: Int): String = {
     val decadeStart = (year / 10) * 10
     s"${decadeStart}s"
   }
   
-  /**
-   * Categorizes a rating into a descriptive category.
-   * 
-   * @param rating The movie rating
-   * @return A categorical description of the rating
-   */
+  /** Categorizes rating using pattern matching. */
   private def categorizeRating(rating: Double): String = {
     rating match {
       case r if r >= 9.0 => "Masterpiece"
@@ -56,15 +34,7 @@ object DataTransformationFunctions {
     }
   }
   
-  /**
-   * Computes a popularity score based on rating and votes.
-   * 
-   * This is a pure function that computes a derived value.
-   * 
-   * @param rating The movie rating
-   * @param votes The number of votes
-   * @return A computed popularity score
-   */
+  /** Computes popularity score from rating and votes. */
   private def computePopularityScore(rating: Double, votes: Long): Double = {
     // Normalize votes to a 0-1 scale (assuming max votes around 1M)
     val normalizedVotes = Math.min(votes / 1000000.0, 1.0)
@@ -73,22 +43,12 @@ object DataTransformationFunctions {
     (rating / 10.0) * 0.7 + normalizedVotes * 0.3
   }
   
-  /**
-   * Transforms a movie record to a simplified format.
-   * 
-   * @param movie The movie record to transform
-   * @return A tuple of (title, year, rating)
-   */
+  /** Transforms movie to simplified tuple format. */
   def toSimpleFormat(movie: MovieRecord): (String, Int, Double) = {
     (movie.title, movie.year, movie.rating)
   }
   
-  /**
-   * Creates a summary string for a movie record.
-   * 
-   * @param movie The movie record to summarize
-   * @return A formatted summary string
-   */
+  /** Creates formatted summary string for movie. */
   def createSummary(movie: MovieRecord): String = {
     s"${movie.title} (${movie.year}) - ${movie.genre} - Rating: ${movie.rating}/10 (${movie.votes} votes)"
   }
