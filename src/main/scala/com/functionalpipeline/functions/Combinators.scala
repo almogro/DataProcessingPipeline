@@ -8,21 +8,6 @@ object Combinators {
     if (condition) f(value) else value
   }
   
-  /** Applies sequence of transformations using foldLeft. */
-  def pipe[A](transformations: List[A => A])(value: A): A = {
-    transformations.foldLeft(value)((acc, f) => f(acc))
-  }
-  
-  /** Applies two functions in sequence (custom andThen). */
-  def andThen[A, B, C](f: A => B, g: B => C)(value: A): C = {
-    g(f(value))
-  }
-  
-  /** Applies two functions in reverse order (custom compose). */
-  def compose[A, B, C](f: B => C, g: A => B)(value: A): C = {
-    f(g(value))
-  }
-  
   /** Retries function with error handling using Either. */
   def retry[A, B](f: A => B, maxRetries: Int)(value: A): Either[Throwable, B] = {
     def retryHelper(remainingRetries: Int): Either[Throwable, B] = {
@@ -39,10 +24,5 @@ object Combinators {
   /** Applies function to Option value safely. */
   def mapOption[A, B](f: A => B)(value: Option[A]): Option[B] = {
     value.map(f)
-  }
-  
-  /** Custom flatMap implementation for lists. */
-  def flatMap[A, B](f: A => List[B])(list: List[A]): List[B] = {
-    list.flatMap(f)
   }
 }

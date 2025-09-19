@@ -13,6 +13,18 @@ package com.functionalpipeline.models
 sealed trait DataRecord
 
 /**
+ * Sealed trait for rating categories using type-based pattern matching.
+ */
+  sealed trait RatingCategory extends Serializable
+case object Masterpiece extends RatingCategory with Serializable
+case object Excellent extends RatingCategory with Serializable
+case object Great extends RatingCategory with Serializable
+case object Good extends RatingCategory with Serializable
+case object Average extends RatingCategory with Serializable
+case object Poor extends RatingCategory with Serializable
+case object Bad extends RatingCategory with Serializable
+
+/**
  * Represents a movie record with immutable properties.
  * 
  * @param id Unique identifier for the movie
@@ -29,7 +41,7 @@ case class MovieRecord(
   genre: String,
   rating: Double,
   votes: Long
-) extends DataRecord
+) extends DataRecord with Serializable
 
 /**
  * Represents a processed movie record with additional computed fields.
@@ -44,7 +56,7 @@ case class ProcessedMovieRecord(
   decade: String,
   ratingCategory: String,
   popularityScore: Double
-) extends DataRecord
+) extends DataRecord with Serializable
 
 /**
  * Represents aggregated statistics for a genre.

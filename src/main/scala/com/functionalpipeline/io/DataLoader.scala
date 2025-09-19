@@ -1,6 +1,7 @@
 package com.functionalpipeline.io
 
 import org.apache.spark.sql.{Dataset, SparkSession}
+import com.functionalpipeline.functions.Combinators._
 
 /**
  * Pure functions for loading data from external sources.
@@ -52,6 +53,21 @@ object DataLoader {
       Right(loadData(spark, path))
     } catch {
       case e: Exception => Left(s"Error loading data from $path: ${e.getMessage}")
+    }
+  }
+  
+  /**
+   * Loads data with retry logic using retry combinator.
+   * 
+   * @param spark SparkSession instance
+   * @param path Path to the data file
+   * @param maxRetries Maximum number of retry attempts
+   * @return Either a Dataset[String] or an error message
+   */
+  def loadDataWithRetry(spark: SparkSession, path: String, maxRetries: Int = 3): Either[String, Dataset[String]] = {
+    retry((x: Unit) => loadData(spark, path), maxRetries)(()) match {
+      case Right(dataset) => Right(dataset.asInstanceOf[Dataset[String]])
+      case Left(error) => Left(s"Failed to load data from $path after $maxRetries retries: ${error.getMessage}")
     }
   }
 }

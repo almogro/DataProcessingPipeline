@@ -1,19 +1,29 @@
 package com.functionalpipeline.functions
 
-import com.functionalpipeline.models.{MovieRecord, ProcessedMovieRecord}
+import com.functionalpipeline.models.{MovieRecord, ProcessedMovieRecord, RatingCategory, Masterpiece, Excellent, Great, Good, Average, Poor, Bad}
+import com.functionalpipeline.functions.Combinators._
 
 /** Pure functions for data transformation and enrichment. */
 object DataTransformationFunctions {
   
-  /** Enriches movie record with computed fields. */
+  /** Enriches movie record with computed fields using when combinator. */
   def enrichMovieRecord(movie: MovieRecord): ProcessedMovieRecord = {
     ProcessedMovieRecord(
       movie = movie,
       decade = computeDecade(movie.year),
-      ratingCategory = categorizeRating(movie.rating),
-      popularityScore = computePopularityScore(movie.rating, movie.votes)
+      ratingCategory = categorizeRating(movie.rating).toString,
+      popularityScore = when(hasDecimalNine(movie.rating))(roundUp)(computePopularityScore(movie.rating, movie.votes))
     )
   }
+  
+  /** Checks if a number has .9 or higher in its decimal part. */
+  private def hasDecimalNine(rating: Double): Boolean = {
+    val decimalPart = rating - rating.toInt
+    decimalPart >= 0.9
+  }
+  
+  /** Rounds up numbers that end in .9 or higher. */
+  private def roundUp(score: Double): Double = Math.ceil(score)
   
   /** Computes decade string from year. */
   private def computeDecade(year: Int): String = {
@@ -22,15 +32,15 @@ object DataTransformationFunctions {
   }
   
   /** Categorizes rating using pattern matching. */
-  private def categorizeRating(rating: Double): String = {
+  private def categorizeRating(rating: Double): RatingCategory = {
     rating match {
-      case r if r >= 9.0 => "Masterpiece"
-      case r if r >= 8.0 => "Excellent"
-      case r if r >= 7.0 => "Great"
-      case r if r >= 6.0 => "Good"
-      case r if r >= 5.0 => "Average"
-      case r if r >= 4.0 => "Poor"
-      case _ => "Bad"
+      case r if r >= 9.0 => Masterpiece
+      case r if r >= 8.0 => Excellent
+      case r if r >= 7.0 => Great
+      case r if r >= 6.0 => Good
+      case r if r >= 5.0 => Average
+      case r if r >= 4.0 => Poor
+      case _ => Bad
     }
   }
   

@@ -34,6 +34,7 @@ class DataPipeline(spark: SparkSession) {
     // Transform using pure functions
     val processedMovies = filteredMovies
       .map(DataTransformationFunctions.enrichMovieRecord)
+      .orderBy(org.apache.spark.sql.functions.col("movie.rating").desc)
     
     processedMovies
   }
@@ -54,6 +55,7 @@ class DataPipeline(spark: SparkSession) {
     // Transform all movies using pure functions (no filtering)
     val processedMovies = movieRecords
       .map(DataTransformationFunctions.enrichMovieRecord)
+      .orderBy(org.apache.spark.sql.functions.col("movie.rating").desc)
     
     processedMovies
   }

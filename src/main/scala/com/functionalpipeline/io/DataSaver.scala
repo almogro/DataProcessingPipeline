@@ -18,7 +18,7 @@ object DataSaver {
         record.movie.title,
         record.movie.year,
         record.movie.genre,
-        formatTo3Decimals(record.movie.rating),
+        formatTo1Decimal(record.movie.rating),
         formatNumberWithCommas(record.movie.votes),
         record.decade,
         record.ratingCategory,
@@ -65,6 +65,12 @@ object DataSaver {
     f"$truncated%.3f"
   }
   
+  /** Formats numbers to exactly 1 decimal place. */
+  private def formatTo1Decimal(number: Double): String = {
+    val truncated = (number * 10).toInt / 10.0
+    f"$truncated%.1f"
+  }
+  
   /** Saves top movies by decade to CSV file. */
   def saveTopMoviesByDecade(data: Dataset[(String, List[ProcessedMovieRecord])], outputPath: String): Unit = {
     import data.sparkSession.implicits._
@@ -75,7 +81,7 @@ object DataSaver {
         (
           decade, 
           movie.movie.title, 
-          formatTo3Decimals(movie.movie.rating), 
+          formatTo1Decimal(movie.movie.rating), 
           formatTo3Decimals(movie.popularityScore), 
           movie.movie.genre
         )
