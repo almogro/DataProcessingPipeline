@@ -3,7 +3,7 @@ package com.functionalpipeline
 import com.functionalpipeline.pipeline.DataPipeline
 import com.functionalpipeline.io.DataLoader
 import com.functionalpipeline.io.DataSaver
-import com.functionalpipeline.functions.{DataTransformationFunctions, DataParsingFunctions}
+import com.functionalpipeline.functions.{DataParsingFunctions, PatternMatching}
 import org.apache.spark.sql.SparkSession
 
 /** Provides the main entry point for the Functional Data Processing Pipeline as described.
@@ -50,7 +50,7 @@ object Main {
        * Step 2: Initialize the functional data pipeline
        * Dependency injection of Spark session into pipeline
        */
-      val pipeline = new DataPipeline(spark)
+      val dataPipeline = new DataPipeline(spark)
       
       /*
        * Step 3: Parse command line arguments with defaults
@@ -69,14 +69,14 @@ object Main {
        * Step 5: Process high-quality data (filtered)
        * Demonstrates pure function composition and data transformation
        */
-      val highQualityData = pipeline.processData(rawData)
+      val highQualityData = dataPipeline.processData(rawData)
       DataSaver.saveData(highQualityData, s"$outputPath/high_quality_movies")
       
       /*
        * Step 6: Process all data (unfiltered)
        * Provides comprehensive dataset for analysis
        */
-      val allData = pipeline.processAllData(rawData)
+      val allData = dataPipeline.processAllData(rawData)
       DataSaver.saveData(allData, s"$outputPath/all_movies")
       
       /*
@@ -86,11 +86,11 @@ object Main {
       println("Generating summarization reports...")
       
       // Genre statistics for high-quality movies
-      val genreStats = pipeline.computeGenreStatistics(highQualityData)
+      val genreStats = dataPipeline.computeGenreStatistics(highQualityData)
       DataSaver.saveGenreStatistics(genreStats, s"$outputPath/genre_statistics")
       
       // Top movies by decade for high-quality movies
-      val topMoviesByDecade = pipeline.findTopMoviesByDecade(highQualityData)
+      val topMoviesByDecade = dataPipeline.findTopMoviesByDecade(highQualityData)
       DataSaver.saveTopMoviesByDecade(topMoviesByDecade, s"$outputPath/top_movies_by_decade")
       
       /*
@@ -151,7 +151,59 @@ object Main {
       }
       
       /*
-       * Step 12: Display completion status and output locations
+       * Step 12: Demonstrate advanced functional pattern matching
+       * Shows sophisticated pattern matching with custom extractors, 
+       * higher-order functions, and functional combinators
+       */
+      println("\nADVANCED PATTERN MATCHING DEMONSTRATIONS:")
+      println("=" * 50)
+      
+      // Demonstrate custom extractors and pattern matching
+      println(s"\n1. Custom Extractors and Pattern Matching:")
+      val sampleMovieForPatternMatching = allData.take(1).head.movie
+      val extractedResult = PatternMatching.processMovieWithExtractors(sampleMovieForPatternMatching)
+      println(s"   Extracted: $extractedResult")
+      
+      // Demonstrate higher-order functions with pattern matching
+      println(s"\n2. Higher-Order Functions with Pattern Matching:")
+      val premiumProcessor = PatternMatching.createMovieProcessor("premium")
+      val premiumResult = premiumProcessor(sampleMovieForPatternMatching)
+      println(s"   Premium Processor: $premiumResult")
+      
+      val popularProcessor = PatternMatching.createMovieProcessor("popular")
+      val popularResult = popularProcessor(sampleMovieForPatternMatching)
+      println(s"   Popular Processor: $popularResult")
+      
+      // Demonstrate monadic operations with pattern matching
+      println(s"\n3. Monadic Operations with Pattern Matching:")
+      val safeResult = PatternMatching.processMovieSafely(Some(sampleMovieForPatternMatching))
+      safeResult match {
+        case Right(result) => println(s"   Safe Processing: $result")
+        case Left(error) => println(s"   Error: $error")
+      }
+      
+      // Demonstrate functional combinators with pattern matching
+      println(s"\n4. Functional Combinators with Pattern Matching:")
+      val combinatorResult = PatternMatching.processMovieWithCombinators(sampleMovieForPatternMatching)
+      println(s"   Combinator Result: $combinatorResult")
+      
+      // Demonstrate functional composition with pattern matching
+      println(s"\n5. Functional Composition with Pattern Matching:")
+      val analyzerResults = PatternMatching.analyzeMovieWithMultipleAnalyzers(sampleMovieForPatternMatching)
+      analyzerResults.foreach { result =>
+        println(s"   Analysis: $result")
+      }
+      
+      // Demonstrate functional pipeline with pattern matching
+      println(s"\n6. Functional Pipeline with Pattern Matching:")
+      val patternMatchingPipeline = PatternMatching.createMovieProcessorPipeline(List("premium", "popular", "decade"))
+      val pipelineResults = patternMatchingPipeline(sampleMovieForPatternMatching)
+      pipelineResults.foreach { result =>
+        println(s"   Pipeline: $result")
+      }
+      
+      /*
+       * Step 13: Display completion status and output locations
        * Provides user feedback on successful processing
        */
       println("\nData processing pipeline completed successfully!")

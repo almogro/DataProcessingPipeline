@@ -84,25 +84,57 @@ object DataTransformationFunctions {
     s"${decadeStart}s"  // Format as decade string
   }
   
+  // Custom extractors for advanced pattern matching
+  object MasterpieceRating {
+    def unapply(rating: Double): Option[Double] = 
+      if (rating >= 9.0) Some(rating) else None
+  }
+  
+  object ExcellentRating {
+    def unapply(rating: Double): Option[Double] = 
+      if (rating >= 8.0 && rating < 9.0) Some(rating) else None
+  }
+  
+  object GreatRating {
+    def unapply(rating: Double): Option[Double] = 
+      if (rating >= 7.0 && rating < 8.0) Some(rating) else None
+  }
+  
+  object GoodRating {
+    def unapply(rating: Double): Option[Double] = 
+      if (rating >= 6.0 && rating < 7.0) Some(rating) else None
+  }
+  
+  object AverageRating {
+    def unapply(rating: Double): Option[Double] = 
+      if (rating >= 5.0 && rating < 6.0) Some(rating) else None
+  }
+  
+  object PoorRating {
+    def unapply(rating: Double): Option[Double] = 
+      if (rating >= 4.0 && rating < 5.0) Some(rating) else None
+  }
+
   /**
-   * Categorizes rating using pattern matching.
+   * Categorizes rating using advanced pattern matching with custom extractors.
    * 
-   * This function demonstrates type-based pattern matching by converting
-   * numeric ratings into categorical RatingCategory objects. It uses
-   * guard conditions to implement a multi-tier classification system.
+   * This function demonstrates sophisticated pattern matching by using custom
+   * extractors instead of simple guard conditions. This approach provides
+   * better reusability, composability, and follows functional programming
+   * principles more closely.
    * 
    * @param rating The numeric rating to categorize
    * @return RatingCategory object representing the rating tier
    */
   private def categorizeRating(rating: Double): RatingCategory = {
     rating match {
-      case r if r >= 9.0 => Masterpiece  // 9.0+ ratings
-      case r if r >= 8.0 => Excellent    // 8.0-8.9 ratings
-      case r if r >= 7.0 => Great        // 7.0-7.9 ratings
-      case r if r >= 6.0 => Good         // 6.0-6.9 ratings
-      case r if r >= 5.0 => Average      // 5.0-5.9 ratings
-      case r if r >= 4.0 => Poor         // 4.0-4.9 ratings
-      case _ => Bad                      // Below 4.0 ratings
+      case MasterpieceRating(_) => Masterpiece
+      case ExcellentRating(_) => Excellent
+      case GreatRating(_) => Great
+      case GoodRating(_) => Good
+      case AverageRating(_) => Average
+      case PoorRating(_) => Poor
+      case _ => Bad
     }
   }
   
@@ -145,15 +177,81 @@ object DataTransformationFunctions {
   }
   
   /**
-   * Creates formatted summary string for movie.
+   * Creates formatted summary string for movie using advanced pattern matching.
    * 
-   * This function generates a human-readable summary string
-   * containing the most important movie information.
+   * This function demonstrates sophisticated pattern matching with custom
+   * extractors, higher-order functions, and functional composition.
    * 
    * @param movie The movie record to summarize
    * @return Formatted string with title, year, genre, rating, and votes
    */
   def createSummary(movie: MovieRecord): String = {
-    s"${movie.title} (${movie.year}) - ${movie.genre} - Rating: ${movie.rating}/10 (${movie.votes} votes)"
+    movie match {
+      case MovieRecord(_, title, year, genre, MasterpieceRating(rating), votes) =>
+        s"MASTERPIECE: $title ($year) - $genre - Rating: $rating/10 ($votes votes)"
+      case MovieRecord(_, title, year, genre, ExcellentRating(rating), votes) =>
+        s"EXCELLENT: $title ($year) - $genre - Rating: $rating/10 ($votes votes)"
+      case MovieRecord(_, title, year, genre, GreatRating(rating), votes) =>
+        s"GREAT: $title ($year) - $genre - Rating: $rating/10 ($votes votes)"
+      case MovieRecord(_, title, year, genre, rating, votes) =>
+        s"$title ($year) - $genre - Rating: $rating/10 ($votes votes)"
+    }
+  }
+
+  // Higher-order functions with pattern matching
+  def createMovieProcessor(processorType: String): MovieRecord => String = {
+    processorType match {
+      case "premium" => movie => movie match {
+        case MovieRecord(_, title, year, genre, MasterpieceRating(rating), votes) =>
+          s"PREMIUM: $title ($year) - $genre - $rating/10 ($votes votes)"
+        case _ => s"Standard: ${movie.title}"
+      }
+      case "popular" => movie => movie match {
+        case MovieRecord(_, title, year, genre, rating, votes) if votes >= 1000000 =>
+          s"POPULAR: $title ($year) - $genre - $rating/10 ($votes votes)"
+        case _ => s"Niche: ${movie.title}"
+      }
+      case "era" => movie => movie match {
+        case MovieRecord(_, title, year, genre, rating, votes) if year >= 2020 =>
+          s"2020s: $title ($year) - $genre - $rating/10"
+        case MovieRecord(_, title, year, genre, rating, votes) if year >= 2010 =>
+          s"2010s: $title ($year) - $genre - $rating/10"
+        case MovieRecord(_, title, year, genre, rating, votes) if year >= 2000 =>
+          s"2000s: $title ($year) - $genre - $rating/10"
+        case _ => s"Classic: ${movie.title}"
+      }
+      case _ => movie => s"${movie.title}"
+    }
+  }
+
+  // Functional composition with pattern matching
+  def processMovieWithCombinators(movie: MovieRecord): String = {
+    val processors = List(
+      createMovieProcessor("premium"),
+      createMovieProcessor("popular"),
+      createMovieProcessor("era")
+    )
+    
+    processors.foldLeft(s"${movie.title}") { (acc, processor) =>
+      val result = processor(movie)
+      if (result != s"${movie.title}") result else acc
+    }
+  }
+
+  // Monadic operations with pattern matching
+  def processMovieSafely(movie: Option[MovieRecord]): Either[String, String] = {
+    movie match {
+      case Some(m) => Right(createSummary(m))
+      case None => Left("No movie data available")
+    }
+  }
+
+  // Pattern matching with functional combinators
+  def processMovieListFunctionally(movies: List[MovieRecord]): List[String] = {
+    movies match {
+      case Nil => Nil
+      case head :: tail => 
+        processMovieWithCombinators(head) :: processMovieListFunctionally(tail)
+    }
   }
 }
