@@ -1,39 +1,39 @@
 package com.functionalpipeline.functions
 
-import com.functionalpipeline.models.{MovieRecord, RatingCategory, Masterpiece, Excellent, Great, Good, Average, Poor, Bad}
+import com.functionalpipeline.models._
 
 /** Provides advanced functional pattern matching examples as described.
  *
- *  This object demonstrates sophisticated pattern matching techniques in Scala,
- *  including custom extractors, higher-order functions, monadic operations,
- *  and functional combinators. These examples showcase how pattern matching
- *  can be used for advanced functional programming constructs beyond simple
- *  case matching.
+ * This object demonstrates sophisticated pattern matching techniques in Scala,
+ * including custom extractors, higher-order functions, monadic operations,
+ * and functional combinators. These examples showcase how pattern matching
+ * can be used for advanced functional programming constructs beyond simple
+ * case matching.
  *
- *  @author Almog Roter and Yonathan Cohen
- *  @version 1.0.0
- *  @since September 2025
+ * @author Almog Roter and Yonathan Cohen
+ * @version 1.0.0
+ * @since September 2025
  */
 object PatternMatching {
 
   // Custom extractors for advanced pattern matching
-  object HighQualityMovie {
+  private object HighQualityMovie {
     def unapply(movie: MovieRecord): Option[(String, Double, Long)] = {
-      if (movie.rating >= 8.0 && movie.votes >= 100000) 
+      if (movie.rating >= 8.0 && movie.votes >= 100000)
         Some((movie.title, movie.rating, movie.votes))
       else None
     }
   }
 
-  object PopularMovie {
+  private object PopularMovie {
     def unapply(movie: MovieRecord): Option[(String, String, Long)] = {
-      if (movie.votes >= 1000000) 
+      if (movie.votes >= 1000000)
         Some((movie.title, movie.genre, movie.votes))
       else None
     }
   }
 
-  object DecadeRange {
+  private object DecadeRange {
     def unapply(year: Int): Option[String] = year match {
       case y if y >= 2020 => Some("2020s")
       case y if y >= 2010 => Some("2010s")
@@ -47,9 +47,9 @@ object PatternMatching {
   // Pattern matching with custom extractors and higher-order functions
   def processMovieWithExtractors(movie: MovieRecord): String = {
     movie match {
-      case HighQualityMovie(title, rating, votes) => 
+      case HighQualityMovie(title, rating, votes) =>
         s"$title: Premium quality (${rating}/10, $votes votes)"
-      case PopularMovie(title, genre, votes) => 
+      case PopularMovie(title, genre, votes) =>
         s"$title: Popular $genre movie ($votes votes)"
       case MovieRecord(_, title, DecadeRange(decade), genre, rating, votes) =>
         s"$title: $decade $genre film (${rating}/10)"
@@ -63,7 +63,7 @@ object PatternMatching {
   def processMovieListFunctionally(movies: List[MovieRecord]): List[String] = {
     movies match {
       case Nil => Nil
-      case head :: tail => 
+      case head :: tail =>
         processMovieWithExtractors(head) :: processMovieListFunctionally(tail)
     }
   }
@@ -71,20 +71,20 @@ object PatternMatching {
   // Pattern matching with higher-order functions and currying
   def createMovieProcessor(processorType: String): MovieRecord => String = {
     processorType match {
-      case "premium" => movie => movie match {
-        case HighQualityMovie(title, rating, votes) => 
+      case "premium" => {
+        case HighQualityMovie(title, rating, votes) =>
           s"PREMIUM: $title (${rating}/10, $votes votes)"
-        case _ => s"Standard: ${movie.title}"
+        case movie => s"Standard: ${movie.title}"
       }
-      case "popular" => movie => movie match {
-        case PopularMovie(title, genre, votes) => 
+      case "popular" => {
+        case PopularMovie(title, genre, votes) =>
           s"POPULAR: $title - $genre ($votes votes)"
-        case _ => s"Niche: ${movie.title}"
+        case movie => s"Niche: ${movie.title}"
       }
-      case "decade" => movie => movie match {
+      case "decade" => {
         case MovieRecord(_, title, DecadeRange(decade), genre, rating, _) =>
           s"$decade: $title ($genre, ${rating}/10)"
-        case _ => s"${movie.title}"
+        case movie => s"${movie.title}"
       }
       case _ => movie => s"${movie.title}"
     }
@@ -97,7 +97,7 @@ object PatternMatching {
       createMovieProcessor("popular"),
       createMovieProcessor("decade")
     )
-    
+
     processors.foldLeft(s"${movie.title}") { (acc, processor) =>
       val result = processor(movie)
       if (result != s"${movie.title}") result else acc
@@ -130,39 +130,23 @@ object PatternMatching {
     movies.map(processMovieSafely)
   }
 
-  // Pattern matching with functional combinators and higher-order functions
-  def processMoviesWithCombinators(movies: List[MovieRecord]): List[String] = {
-    movies.foldLeft(List.empty[String]) { (acc, movie) =>
-      val processed = processMovieWithCombinators(movie)
-      processed :: acc
-    }.reverse
-  }
-
-  // Pattern matching with functional error handling and recovery
-  def processMovieWithRecovery(movie: Option[MovieRecord]): String = {
-    movie match {
-      case Some(m) => processMovieWithExtractors(m)
-      case None => "No movie data available"
-    }
-  }
-
   // Pattern matching with functional composition and currying
   def createMovieAnalyzer(analysisType: String): MovieRecord => String = {
     analysisType match {
-      case "quality" => movie => movie match {
-        case HighQualityMovie(title, rating, votes) => 
+      case "quality" => {
+        case HighQualityMovie(title, rating, votes) =>
           s"Quality Analysis: $title is high-quality (${rating}/10, $votes votes)"
-        case _ => s"Quality Analysis: ${movie.title} is standard quality"
+        case movie => s"Quality Analysis: ${movie.title} is standard quality"
       }
-      case "popularity" => movie => movie match {
-        case PopularMovie(title, genre, votes) => 
+      case "popularity" => {
+        case PopularMovie(title, genre, votes) =>
           s"Popularity Analysis: $title is popular in $genre ($votes votes)"
-        case _ => s"Popularity Analysis: ${movie.title} is niche"
+        case movie => s"Popularity Analysis: ${movie.title} is niche"
       }
-      case "era" => movie => movie match {
+      case "era" => {
         case MovieRecord(_, title, DecadeRange(decade), genre, rating, _) =>
           s"Era Analysis: $title represents $decade $genre (${rating}/10)"
-        case _ => s"Era Analysis: ${movie.title} is timeless"
+        case movie => s"Era Analysis: ${movie.title} is timeless"
       }
       case _ => movie => s"General Analysis: ${movie.title}"
     }
@@ -204,7 +188,7 @@ object PatternMatching {
       createMovieProcessor("popular"),
       createMovieProcessor("decade")
     )
-    
+
     processors.foldLeft(s"${movie.title}") { (acc, processor) =>
       val result = processor(movie)
       if (result != s"${movie.title}") result else acc

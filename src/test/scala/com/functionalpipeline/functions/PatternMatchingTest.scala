@@ -1,18 +1,18 @@
 package com.functionalpipeline.functions
 
-import com.functionalpipeline.models.{MovieRecord, Masterpiece, Excellent, Great, Good, Average, Poor, Bad}
+import com.functionalpipeline.models._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 /** Test suite for advanced PatternMatching as described.
  *
- *  This test suite validates the correctness of advanced pattern matching
- *  implementations including custom extractors, higher-order functions,
- *  monadic operations, and functional combinators.
+ * This test suite validates the correctness of advanced pattern matching
+ * implementations including custom extractors, higher-order functions,
+ * monadic operations, and functional combinators.
  *
- *  @author Almog Roter and Yonathan Cohen
- *  @version 1.0.0
- *  @since September 2025
+ * @author Almog Roter and Yonathan Cohen
+ * @version 1.0.0
+ * @since September 2025
  */
 class PatternMatchingTest extends AnyFlatSpec with Matchers {
 
