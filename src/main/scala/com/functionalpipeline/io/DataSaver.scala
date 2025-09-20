@@ -19,7 +19,7 @@ object DataSaver {
         record.movie.year,
         record.movie.genre,
         formatTo1Decimal(record.movie.rating),
-        formatNumberWithCommas(record.movie.votes),
+        record.movie.votes,
         record.decade,
         record.ratingCategory,
         formatTo3Decimals(record.popularityScore)
@@ -37,13 +37,13 @@ object DataSaver {
   def saveGenreStatistics(data: Dataset[GenreStatistics], outputPath: String): Unit = {
     import data.sparkSession.implicits._
     
-    // Format numbers with comma separators for better readability
+    // Format data for CSV output
     val formattedData = data.map { stats =>
       (
         stats.genre,
         stats.count,
         stats.averageRating,
-        formatNumberWithCommas(stats.totalVotes),
+        stats.totalVotes,
         stats.topMovie
       )
     }.toDF("genre", "count", "averageRating", "totalVotes", "topMovie")
@@ -52,11 +52,6 @@ object DataSaver {
       .mode("overwrite")
       .option("header", "true")
       .csv(outputPath)
-  }
-  
-  /** Formats numbers with comma separators. */
-  private def formatNumberWithCommas(number: Long): String = {
-    java.text.NumberFormat.getNumberInstance(java.util.Locale.US).format(number)
   }
   
   /** Truncates numbers to exactly 3 decimal places. */
